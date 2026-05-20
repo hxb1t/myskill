@@ -21,7 +21,7 @@ export default function AppTextInput({ label, ...props }) {
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: theme.spacing.m,
+    marginBottom: theme.spacing.l,
   },
   label: {
     fontSize: 14,

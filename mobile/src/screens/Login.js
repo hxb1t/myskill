@@ -18,21 +18,12 @@ export default function LoginScreen({ navigation }) {
         <View style={styles.logoContainer}></View>
         <Text style={styles.title}>Welcome to MySkill</Text>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Username</Text>
-          <AppTextInput label="Username" placeholder="johndoeusr" />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Password</Text>
-          <View style={styles.passwordContainer}>
-            <AppTextInput
-              label="Password"
-              placeholder="*************"
-              secureTextEntry={true}
-            />
-          </View>
-        </View>
+        <AppTextInput label="Username" placeholder="johndoeusr" />
+        <AppTextInput
+          label="Password"
+          placeholder="*************"
+          secureTextEntry={true}
+        />
 
         <TouchableOpacity
           style={styles.button}
@@ -72,28 +63,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: theme.spacing.xl,
   },
-  inputGroup: { marginBottom: theme.spacing.m },
   label: {
     fontSize: 14,
     color: theme.colors.text,
     marginBottom: theme.spacing.s,
     fontWeight: "500",
   },
-  input: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.m,
-    padding: 14,
-    fontSize: 16,
-  },
-  passwordContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.m,
-    paddingHorizontal: 14,
-    height: 50,
-  },
-  passwordInput: { flex: 1, fontSize: 16 },
   button: {
     backgroundColor: theme.colors.primary,
     padding: 16,
@@ -109,8 +84,4 @@ const styles = StyleSheet.create({
   },
   footerText: { color: theme.colors.textMuted },
   footerLink: { color: theme.colors.primary, fontWeight: "bold" },
-  inputFocused: {
-    borderColor: theme.colors.primary,
-    borderWidth: 1,
-  },
 });
