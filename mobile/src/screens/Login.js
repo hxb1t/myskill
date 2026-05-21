@@ -1,11 +1,12 @@
 import { useState } from "react";
 import {
+  Image,
   SafeAreaView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import AppText from "../components/AppText";
 import AppTextInput from "../components/AppTextInput";
 import { theme } from "../constants/theme";
 
@@ -15,8 +16,15 @@ export default function LoginScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <View style={styles.logoContainer}></View>
-        <Text style={styles.title}>Welcome to MySkill</Text>
+        <View style={styles.logoContainer}>
+          <Image
+            source={require("../../assets/myskill-icon.png")}
+            style={styles.icon}
+          />
+        </View>
+        <AppText style={styles.title} weight="bold">
+          Welcome to MySkill
+        </AppText>
 
         <AppTextInput label="Username" placeholder="johndoeusr" />
         <AppTextInput
@@ -29,13 +37,17 @@ export default function LoginScreen({ navigation }) {
           style={styles.button}
           onPress={() => navigation.navigate("Home")}
         >
-          <Text style={styles.buttonText}>Login</Text>
+          <AppText style={styles.buttonText} weight="bold">
+            Login
+          </AppText>
         </TouchableOpacity>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Don't have an account? </Text>
+          <AppText style={styles.footerText}>Don't have an account? </AppText>
           <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-            <Text style={styles.footerLink}>Register here</Text>
+            <AppText style={styles.footerLink} weight="bold">
+              Register here
+            </AppText>
           </TouchableOpacity>
         </View>
       </View>
@@ -58,7 +70,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
     color: theme.colors.text,
     textAlign: "center",
     marginBottom: theme.spacing.xl,
@@ -67,7 +78,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: theme.colors.text,
     marginBottom: theme.spacing.s,
-    fontWeight: "500",
   },
   button: {
     backgroundColor: theme.colors.primary,
@@ -76,12 +86,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: theme.spacing.m,
   },
-  buttonText: { color: theme.colors.surface, fontSize: 16, fontWeight: "bold" },
+  buttonText: { color: theme.colors.surface, fontSize: 16 },
   footer: {
     flexDirection: "row",
     justifyContent: "center",
     marginTop: theme.spacing.xl,
   },
   footerText: { color: theme.colors.textMuted },
-  footerLink: { color: theme.colors.primary, fontWeight: "bold" },
+  footerLink: { color: theme.colors.primary },
+  icon: {
+    width: 51,
+    height: 51,
+    resizeMode: "contain",
+  },
 });
