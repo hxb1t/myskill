@@ -117,7 +117,7 @@ export default function HomeScreen({ navigation }) {
             Sharpen Your Skills Today!
           </AppText>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate("EditProfile")}>
+        <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
           <Image
             style={styles.avatarMain}
             source={{

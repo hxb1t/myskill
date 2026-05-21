@@ -1,2 +1,3 @@
 # myskill-mobile
-Specialized Platform Development Exam - My Skill Application
+
+Specialized Platform Development Exam - My Skill Mobile Application
