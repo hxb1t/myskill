@@ -1,10 +1,10 @@
 import { useState } from "react";
 import {
-  Image,
-  SafeAreaView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
+    Image,
+    SafeAreaView,
+    StyleSheet,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import AppText from "../components/AppText";
 import AppTextInput from "../components/AppTextInput";

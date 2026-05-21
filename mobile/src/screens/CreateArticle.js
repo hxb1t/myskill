@@ -2,19 +2,19 @@ import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useRef, useState } from "react";
 import {
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
+    Image,
+    KeyboardAvoidingView,
+    Platform,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import {
-  actions,
-  RichEditor,
-  RichToolbar,
+    actions,
+    RichEditor,
+    RichToolbar,
 } from "react-native-pell-rich-editor";
 import AppText from "../components/AppText";
 import AppTextInput from "../components/AppTextInput";

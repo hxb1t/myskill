@@ -1,0 +1,87 @@
+{
+  "format_on_save": "on",
+
+  "file_scan_exclusions": [
+    "**/.git",
+    "**/node_modules",
+    "**/.expo",
+    "**/android",
+    "**/ios",
+    "**/dist",
+    "**/build",
+    "**/.DS_Store",
+  ],
+
+  "inlay_hints": {
+    "enabled": true,
+    "show_type_hints": true,
+    "show_parameter_hints": true,
+  },
+
+  "code_actions_on_format": {
+    "source.fixAll.eslint": true,
+    "source.organizeImports": true,
+  },
+
+  "languages": {
+    "JavaScript": {
+      "language_servers": ["typescript-language-server", "eslint"],
+      "formatter": {
+        "external": {
+          "command": "prettier",
+          "arguments": ["--stdin-filepath", "{filepath}"],
+        },
+      },
+    },
+    "TypeScript": {
+      "language_servers": ["typescript-language-server", "eslint"],
+      "formatter": {
+        "external": {
+          "command": "prettier",
+          "arguments": ["--stdin-filepath", "{filepath}"],
+        },
+      },
+    },
+    "TSX": {
+      "language_servers": ["typescript-language-server", "eslint"],
+      "formatter": {
+        "external": {
+          "command": "prettier",
+          "arguments": ["--stdin-filepath", "{filepath}"],
+        },
+      },
+    },
+    "JSON": {
+      "formatter": {
+        "external": {
+          "command": "prettier",
+          "arguments": ["--stdin-filepath", "{filepath}"],
+        },
+      },
+    },
+  },
+
+  "lsp": {
+    "eslint": {
+      "settings": {
+        "workingDirectory": {
+          "mode": "auto",
+        },
+      },
+    },
+    "typescript-language-server": {
+      "initialization_options": {
+        "preferences": {
+          "includeInlayParameterNameHints": "all",
+          "includeInlayParameterNameHintsWhenArgumentMatchesName": true,
+          "includeInlayFunctionParameterTypeHints": true,
+          "includeInlayVariableTypeHints": true,
+          "includeInlayPropertyDeclarationTypeHints": true,
+          "includeInlayFunctionLikeReturnTypeHints": true,
+          "includeInlayEnumMemberValueHints": true,
+          "importModuleSpecifierPreference": "non-relative",
+        },
+      },
+    },
+  },
+}

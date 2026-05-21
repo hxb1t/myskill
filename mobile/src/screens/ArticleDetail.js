@@ -1,11 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import {
-  Image,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
+    Image,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import AppText from "../components/AppText";
 import { theme } from "../constants/theme";

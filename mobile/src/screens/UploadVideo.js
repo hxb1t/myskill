@@ -3,18 +3,18 @@ import * as ImagePicker from "expo-image-picker";
 import { useVideoPlayer, VideoView } from "expo-video"; // Added for video preview
 import { useRef, useState } from "react";
 import {
-  KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
+    KeyboardAvoidingView,
+    Platform,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import {
-  actions,
-  RichEditor,
-  RichToolbar,
+    actions,
+    RichEditor,
+    RichToolbar,
 } from "react-native-pell-rich-editor";
 import AppText from "../components/AppText";
 import AppTextInput from "../components/AppTextInput";
@@ -87,7 +87,6 @@ export default function UploadVideoScreen({ navigation }) {
 
             {videoUri ? (
               <View>
-                {/* 1. The Video is now independent and can receive touches */}
                 <VideoView
                   player={player}
                   style={styles.videoPreview}
@@ -95,7 +94,6 @@ export default function UploadVideoScreen({ navigation }) {
                   allowsFullscreen={true}
                 />
 
-                {/* 2. A separate button to change the video */}
                 <TouchableOpacity onPress={pickVideo} style={styles.changeBtn}>
                   <Ionicons
                     name="refresh"
@@ -149,7 +147,6 @@ export default function UploadVideoScreen({ navigation }) {
               />
               <RichEditor
                 ref={richText}
-                // 5. Fixed the state setter here
                 onChange={(descriptionText) => setContentHtml(descriptionText)}
                 placeholder="Write your video description here..."
                 style={styles.richTextEditorStyle}
