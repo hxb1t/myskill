@@ -12,6 +12,16 @@ const getContents = async (req, res, next) => {
   }
 };
 
+const getContentById = async (req, res, next) => {
+  try {
+    const content = await contentService.getContentDetail(req.params.contentId);
+    sendSuccess(res, content);
+  } catch (error) {
+    logger.error("[getContentById] Unexpected error happened", error.message);
+    next(error);
+  }
+};
+
 const createContent = async (req, res, next) => {
   try {
     const content = await contentService.createContent(
@@ -25,4 +35,4 @@ const createContent = async (req, res, next) => {
   }
 };
 
-module.exports = { getContents, createContent };
+module.exports = { getContents, createContent, getContentById };

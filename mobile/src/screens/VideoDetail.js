@@ -1,26 +1,48 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useVideoPlayer, VideoView } from "expo-video";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-    Image,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    TouchableOpacity,
-    View,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from "react-native";
+import RenderHTML from "react-native-render-html";
 import AppText from "../components/AppText";
+import Loading from "../components/Loading";
 import { theme } from "../constants/theme";
+import contentService from "../services/content.service";
 
-export default function VideoDetailScreen({ navigation }) {
+export default function VideoDetailScreen({ navigation, route }) {
   const [data, setData] = useState({});
+  const { contentId = 0 } = route.params || {};
+  const [loading, setLoading] = useState(true);
 
-  const player = useVideoPlayer(
-    "https://www.w3schools.com/html/mov_bbb.mp4",
-    (player) => {
-      player.loop = true;
-    },
-  );
+  useEffect(() => {
+    const fetchContentDetail = async () => {
+      try {
+        const data = await contentService.getContentDetail(contentId);
+        setData(data);
+      } catch (error) {
+        console.error("Failed to fetch profile:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchContentDetail();
+  }, []);
+
+  const player = useVideoPlayer(data.videoUrl, (player) => {
+    player.loop = true;
+  });
+
+  if (loading) {
+    return <Loading container={styles.container} />;
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -46,34 +68,38 @@ export default function VideoDetailScreen({ navigation }) {
         </View>
 
         <AppText style={styles.title} weight="bold">
-          Membuat Website menggunakan React.JS
+          {data.title}
         </AppText>
 
         <View style={styles.authorRow}>
           <View>
             <Image
               source={{
-                uri: "https://images.unsplash.com/photo-1740252117044-2af197eea287?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                uri: data.authorId.avatarUrl,
               }}
               style={styles.avatar}
             />
           </View>
           <View>
             <AppText style={styles.authorName} weight="bold">
-              Alvian Mangalik
+              {data.authorId.fullName}
             </AppText>
-            <AppText style={styles.authorSchool}>SMK Telkom Jakarta</AppText>
+            <AppText style={styles.authorSchool}>
+              {data.authorId.school}
+            </AppText>
           </View>
         </View>
 
-        <AppText style={styles.bodyText}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent
-          risus ligula, commodo vel ex in, scelerisque semper tellus. Integer
-          quis purus imperdiet, pharetra lorem a, feugiat enim.
-          {"\n\n"}
-          Vestibulum mollis sapien in eros cursus aliquet. Sed nec quam felis.
-          In condimentum mi ac eleifend lobortis.
-        </AppText>
+        <RenderHTML
+          baseStyle={{
+            fontSize: 14,
+            textAlign: "left",
+            color: theme.colors.text,
+            lineHeight: 21,
+            marginTop: 5,
+          }}
+          source={{ html: data.descriptionHtml }}
+        />
       </ScrollView>
     </SafeAreaView>
   );
@@ -126,11 +152,4 @@ const styles = StyleSheet.create({
   },
   authorName: { fontSize: 14, color: theme.colors.text },
   authorSchool: { fontSize: 12, color: theme.colors.textMuted },
-  bodyText: {
-    fontSize: 14,
-    textAlign: "left",
-    color: theme.colors.text,
-    lineHeight: 21,
-    marginTop: 5,
-  },
 });

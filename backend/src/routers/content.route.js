@@ -6,5 +6,6 @@ const router = express.Router();
 
 router.get("/", contentController.getContents);
 router.post("/create", contentController.createContent);
+router.get("/:contentId", contentController.getContentById);
 
 module.exports = router;

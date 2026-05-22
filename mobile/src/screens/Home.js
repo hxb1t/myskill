@@ -1,72 +1,60 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useEffect, useState } from "react";
 import {
-    FlatList,
-    Image,
-    ImageBackground,
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  FlatList,
+  Image,
+  ImageBackground,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import AppText from "../components/AppText";
+import Loading from "../components/Loading";
 import { theme } from "../constants/theme";
-
-const FEATURED_DATA = [
-  {
-    id: "1",
-    title: "Membuat Website menggunakan React.JS",
-    type: "Article",
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=1469&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    author: "Alvian Mangalik",
-    authorAvatarUrl:
-      "https://images.unsplash.com/photo-1740252117044-2af197eea287?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    school: "SMK Telkom Jakarta",
-  },
-  {
-    id: "2",
-    title: "Application Deployments",
-    type: "Video",
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1667372335962-5fd503a8ae5b?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    authorAvatarUrl:
-      "https://images.unsplash.com/photo-1740252117044-2af197eea287?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    author: "Alvian Mangalik",
-    school: "SMK Telkom Jakarta",
-  },
-  {
-    id: "3",
-    title: "Membuat Website menggunakan React.JS",
-    type: "Article",
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=1469&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    author: "Alvian Mangalik",
-    authorAvatarUrl:
-      "https://images.unsplash.com/photo-1740252117044-2af197eea287?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    school: "SMK Telkom Jakarta",
-  },
-  {
-    id: "4",
-    title: "Application Deployments",
-    type: "Video",
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1667372335962-5fd503a8ae5b?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    authorAvatarUrl:
-      "https://images.unsplash.com/photo-1740252117044-2af197eea287?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    author: "Alvian Mangalik",
-    school: "SMK Telkom Jakarta",
-  },
-];
+import contentService from "../services/content.service";
+import profileService from "../services/profile.service";
 
 export default function HomeScreen({ navigation }) {
+  const [userData, setUserData] = useState({});
+  const [data, setData] = useState({});
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const fetchContents = async () => {
+      try {
+        const data = await contentService.getContents();
+        setData(data);
+      } catch (error) {
+        console.error("Failed to fetch profile:", error);
+      }
+    };
+
+    const fetchProfile = async () => {
+      try {
+        const data = await profileService.getUserProfile();
+        setUserData(data);
+      } catch (error) {
+        console.error("Failed to fetch profile:", error);
+      }
+    };
+
+    fetchProfile();
+    fetchContents();
+    setLoading(false);
+  }, []);
+
   const renderCard = ({ item }) => (
     <TouchableOpacity
       style={styles.featuredCard}
       onPress={() =>
-        item.type === "Article"
-          ? navigation.navigate("ArticleDetail")
-          : navigation.navigate("VideoDetail")
+        item.type === "article"
+          ? navigation.navigate("ArticleDetail", {
+              contentId: item._id,
+            })
+          : navigation.navigate("VideoDetail", {
+              contentId: item._id,
+            })
       }
     >
       <ImageBackground
@@ -77,7 +65,7 @@ export default function HomeScreen({ navigation }) {
         <View
           style={[
             styles.badge,
-            item.type === "Article" ? styles.badgeArticle : styles.badgeVideo,
+            item.type === "article" ? styles.badgeArticle : styles.badgeVideo,
           ]}
         >
           <AppText style={styles.badgeText} weight="bold">
@@ -93,15 +81,17 @@ export default function HomeScreen({ navigation }) {
 
         <View style={styles.authorRow}>
           <Image
-            source={{ uri: item.authorAvatarUrl }}
+            source={{ uri: item.authorId.avatarUrl }}
             style={styles.avatarSmall}
           />
 
           <View>
             <AppText style={styles.authorName} weight="bold">
-              {item.author}
+              {item.authorId.fullName}
             </AppText>
-            <AppText style={styles.authorSchool}>{item.school}</AppText>
+            <AppText style={styles.authorSchool}>
+              {item.authorId.school}
+            </AppText>
           </View>
         </View>
       </View>
@@ -112,16 +102,25 @@ export default function HomeScreen({ navigation }) {
     <>
       <View style={styles.header}>
         <View>
-          <AppText style={styles.greeting}>Hello, John Doe!</AppText>
+          <AppText style={styles.greeting}>Hello, {userData.fullName}</AppText>
           <AppText style={styles.subtitle} weight="bold">
             Sharpen Your Skills Today!
           </AppText>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("Profile", {
+              fullName: userData.fullName,
+              username: userData.username,
+              school: userData.school,
+              avatarUrl: userData.avatarUrl,
+            })
+          }
+        >
           <Image
             style={styles.avatarMain}
             source={{
-              uri: "https://images.unsplash.com/photo-1772371272152-d1806d4351e0?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+              uri: userData.avatarUrl,
             }}
           />
         </TouchableOpacity>
@@ -153,11 +152,15 @@ export default function HomeScreen({ navigation }) {
     </>
   );
 
+  if (loading) {
+    return <Loading container={styles.container} />;
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        data={FEATURED_DATA}
-        keyExtractor={(item) => item.id}
+        data={data}
+        keyExtractor={(item) => item._id}
         renderItem={renderCard}
         ListHeaderComponent={renderHeader}
         showsVerticalScrollIndicator={false}

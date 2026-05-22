@@ -3,18 +3,18 @@ import * as ImagePicker from "expo-image-picker";
 import { useVideoPlayer, VideoView } from "expo-video"; // Added for video preview
 import { useRef, useState } from "react";
 import {
-    KeyboardAvoidingView,
-    Platform,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    TouchableOpacity,
-    View,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import {
-    actions,
-    RichEditor,
-    RichToolbar,
+  actions,
+  RichEditor,
+  RichToolbar,
 } from "react-native-pell-rich-editor";
 import AppText from "../components/AppText";
 import AppTextInput from "../components/AppTextInput";
@@ -22,6 +22,7 @@ import { theme } from "../constants/theme";
 
 export default function UploadVideoScreen({ navigation }) {
   const [videoUri, setVideoUri] = useState(null);
+  const [imageUri, setImageUri] = useState(null);
   const [contentHtml, setContentHtml] = useState("");
 
   const richText = useRef();
@@ -48,6 +49,27 @@ export default function UploadVideoScreen({ navigation }) {
 
     if (!result.canceled) {
       setVideoUri(result.assets[0].uri);
+    }
+  };
+
+  const pickImage = async () => {
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert("Permission to access camera roll is required!");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [16, 9],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      setImageUri(result.assets[0].uri);
     }
   };
 
@@ -84,7 +106,6 @@ export default function UploadVideoScreen({ navigation }) {
 
           <View style={styles.inputGroup}>
             <AppText style={styles.label}>Select Video</AppText>
-
             {videoUri ? (
               <View>
                 <VideoView
@@ -122,6 +143,28 @@ export default function UploadVideoScreen({ navigation }) {
                 </View>
               </TouchableOpacity>
             )}
+          </View>
+
+          <View style={styles.inputGroup}>
+            <AppText style={styles.label}>Upload Thumbnail</AppText>
+            <TouchableOpacity
+              style={styles.uploadPlaceholder}
+              onPress={pickImage}
+            >
+              {imageUri ? (
+                <Image
+                  source={{ uri: imageUri }}
+                  style={styles.uploadedImage}
+                />
+              ) : (
+                <View style={styles.placeholderContent}>
+                  <Ionicons name="image-outline" size={40} color={"#A0AEC0"} />
+                  <AppText style={styles.placeholderText}>
+                    Tap to upload thumbnail
+                  </AppText>
+                </View>
+              )}
+            </TouchableOpacity>
           </View>
 
           <View style={styles.inputGroup}>

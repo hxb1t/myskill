@@ -2,53 +2,104 @@ import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useRef, useState } from "react";
 import {
-    Image,
-    KeyboardAvoidingView,
-    Platform,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import {
-    actions,
-    RichEditor,
-    RichToolbar,
+  actions,
+  RichEditor,
+  RichToolbar,
 } from "react-native-pell-rich-editor";
 import AppText from "../components/AppText";
 import AppTextInput from "../components/AppTextInput";
 import { theme } from "../constants/theme";
 
+import contentService from "../services/content.service";
+import fileService from "../services/file.service";
+
 export default function CreateArticleScreen({ navigation }) {
   const [imageUri, setImageUri] = useState(null);
+  const [title, setTitle] = useState("");
   const [contentHtml, setContentHtml] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const richText = useRef();
 
   const pickImage = async () => {
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    try {
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-    if (permissionResult.granted === false) {
-      alert("Permission to access camera roll is required!");
-      return;
-    }
+      if (permissionResult.granted === false) {
+        Alert.alert(
+          "Permission Required",
+          "Permission to access camera roll is required!",
+        );
+        return;
+      }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [16, 9],
-      quality: 0.8,
-    });
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [16, 9],
+        quality: 0.8,
+      });
 
-    if (!result.canceled) {
-      setImageUri(result.assets[0].uri);
+      if (!result.canceled) {
+        setImageUri(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error("Image picker error:", error);
     }
   };
 
-  const handlePostArticle = () => {
-    navigation.goBack();
+  const handlePostArticle = async () => {
+    if (!imageUri)
+      return Alert.alert(
+        "Missing Thumbnail",
+        "Please upload a thumbnail image.",
+      );
+    if (!title.trim())
+      return Alert.alert("Missing Title", "Please enter an article title.");
+    if (!contentHtml.trim())
+      return Alert.alert(
+        "Missing Content",
+        "Please write some content for your article.",
+      );
+
+    setIsSubmitting(true);
+
+    try {
+      const uploadResponse = await fileService.uploadFile(imageUri);
+
+      const thumbnailUrl = uploadResponse.url;
+      console.log("thumbnailUrl", thumbnailUrl);
+      await contentService.createContent({
+        title,
+        contentHtml,
+        thumbnailUrl,
+        type: "article",
+      });
+
+      Alert.alert("Success", "Your article has been posted!", [
+        { text: "Awesome", onPress: () => navigation.goBack() },
+      ]);
+    } catch (error) {
+      Alert.alert(
+        "Upload Failed",
+        error.message || "Something went wrong while posting.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -65,6 +116,7 @@ export default function CreateArticleScreen({ navigation }) {
             <TouchableOpacity
               style={styles.backBtn}
               onPress={() => navigation.goBack()}
+              disabled={isSubmitting}
             >
               <Ionicons
                 name="chevron-back"
@@ -83,6 +135,7 @@ export default function CreateArticleScreen({ navigation }) {
             <TouchableOpacity
               style={styles.uploadPlaceholder}
               onPress={pickImage}
+              disabled={isSubmitting}
             >
               {imageUri ? (
                 <Image
@@ -101,11 +154,17 @@ export default function CreateArticleScreen({ navigation }) {
           </View>
 
           <View style={styles.inputGroup}>
-            <AppTextInput label="Title" />
+            <AppTextInput
+              label="Title"
+              placeholder="Enter article title..."
+              value={title}
+              onChangeText={setTitle}
+              editable={!isSubmitting}
+            />
           </View>
 
           <View style={[styles.inputGroup, { flex: 1 }]}>
-            <AppText>Content</AppText>
+            <AppText style={styles.label}>Content</AppText>
 
             <View style={styles.richTextContainer}>
               <RichToolbar
@@ -123,19 +182,28 @@ export default function CreateArticleScreen({ navigation }) {
               />
               <RichEditor
                 ref={richText}
-                onChange={(descriptionText) => setArticleHtml(descriptionText)}
+                onChange={(text) => setContentHtml(text)}
                 placeholder="Write your article here..."
                 style={styles.richTextEditorStyle}
                 initialHeight={250}
+                useContainer={true}
               />
             </View>
           </View>
 
           <View style={styles.footer}>
-            <TouchableOpacity style={styles.button} onPress={handlePostArticle}>
-              <AppText style={styles.buttonText} weight="bold">
-                Post Article
-              </AppText>
+            <TouchableOpacity
+              style={[styles.button, isSubmitting && styles.buttonDisabled]}
+              onPress={handlePostArticle}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <ActivityIndicator color={theme.colors.surface} />
+              ) : (
+                <AppText style={styles.buttonText} weight="bold">
+                  Post Article
+                </AppText>
+              )}
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -171,6 +239,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: theme.colors.text,
     marginBottom: theme.spacing.s,
+    fontWeight: "600",
   },
 
   uploadPlaceholder: {
@@ -200,6 +269,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderWidth: 1,
     borderColor: "#E2E8F0",
+    flex: 1,
   },
   richTextToolbar: {
     backgroundColor: "#F7FAFC",
@@ -208,14 +278,18 @@ const styles = StyleSheet.create({
   },
   richTextEditorStyle: {
     backgroundColor: theme.colors.surface,
+    flex: 1,
   },
 
-  footer: { padding: theme.spacing.l, paddingBottom: theme.spacing.xl },
+  footer: { paddingBottom: theme.spacing.xl, paddingTop: theme.spacing.m },
   button: {
     backgroundColor: theme.colors.primary,
     padding: 16,
     borderRadius: theme.borderRadius.m,
     alignItems: "center",
+  },
+  buttonDisabled: {
+    opacity: 0.7,
   },
   buttonText: { color: theme.colors.surface, fontSize: 16 },
 });

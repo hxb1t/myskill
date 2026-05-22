@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import {
   Alert,
   Image,
@@ -12,26 +12,10 @@ import {
 import AppText from "../components/AppText";
 import { theme } from "../constants/theme";
 import { AuthContext } from "../context/AuthContext";
-import profileService from "../services/profile.service";
 
-export default function ProfileScreen({ navigation }) {
-  const [userData, setUserData] = useState({});
+export default function ProfileScreen({ navigation, route }) {
   const { logout } = useContext(AuthContext);
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const data = await profileService.getUserProfile();
-        setUserData(data);
-      } catch (error) {
-        console.error("Failed to fetch profile:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, []);
+  const { fullName, school, username, avatarUrl } = route.params || {};
 
   const showLogoutPopup = () => {
     Alert.alert(
@@ -74,19 +58,19 @@ export default function ProfileScreen({ navigation }) {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.profileHeader}>
-          <Image source={{ uri: userData.avatarUri }} style={styles.avatar} />
+          <Image source={{ uri: avatarUrl }} style={styles.avatar} />
           <AppText style={styles.fullName} weight="bold">
-            {userData.fullName}
+            {fullName}
           </AppText>
-          <AppText style={styles.username}>@{userData.username}</AppText>
+          <AppText style={styles.username}>@{username}</AppText>
         </View>
 
         <View style={styles.infoCard}>
           <View style={styles.infoRow}>
             <AppText style={styles.infoLabel} weight="bold">
-              School / University
+              School
             </AppText>
-            <AppText style={styles.infoValue}>{userData.school}</AppText>
+            <AppText style={styles.infoValue}>{school}</AppText>
           </View>
         </View>
 
