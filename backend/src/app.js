@@ -13,6 +13,7 @@ const { seedContentData, seedUserData, connectDB } = require("./config/db");
 // Routes
 const authRoute = require("./routers/auth.route");
 const userRoute = require("./routers/user.route");
+const fileRoute = require("./routers/file.route");
 
 const app = express();
 
@@ -59,6 +60,7 @@ app.use("/auth", authRoute);
 
 // Protected Auth Route
 app.use("/user", authMiddleware, userRoute);
+app.use("/file", authMiddleware, fileRoute);
 
 // Global Error handler
 app.use(errorHandler);

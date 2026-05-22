@@ -1,7 +1,7 @@
 const express = require("express");
-const router = express.Router({ mergeParams: true });
+const router = express.Router();
 const userController = require("../controllers/user.controller");
 
-router.get("/:userId", userController.getUserProfile);
+router.get("/profile", userController.getUserProfile);
 
 module.exports = router;

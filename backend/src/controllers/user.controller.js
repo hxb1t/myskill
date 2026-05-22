@@ -4,8 +4,8 @@ const logger = require("../utils/logger");
 
 const getUserProfile = async (req, res, next) => {
   try {
-    logger.info("request: ", req.params);
-    const userProfile = await userService.getUserProfile(req.params.userId);
+    logger.info("claims: ", req.userId);
+    const userProfile = await userService.getUserProfile(req.claims.userId);
     sendSuccess(res, userProfile);
   } catch (error) {
     logger.error("Error happened when get user profile", error.message);

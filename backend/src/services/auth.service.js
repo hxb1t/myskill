@@ -42,18 +42,13 @@ const login = async ({ username, password }) => {
   if (!ok) throw new UnauthorizedError();
 
   const accessToken = jwt.sign(
-    { id: user._id, username: user.username },
+    { userId: user._id, username: user.username },
     process.env.JWT_SECRET,
     { expiresIn: Number(process.env.JWT_EXPIRED_TIME) || 900 },
   );
 
   return {
     accessToken,
-    user: {
-      id: user._id,
-      name: user.fullName,
-      username: user.username,
-    },
   };
 };
 
