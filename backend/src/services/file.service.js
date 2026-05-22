@@ -5,7 +5,7 @@ const logger = require("../utils/logger");
 const User = require("../models/User");
 
 const uploadFileToMinio = async (file, userId) => {
-  logger.info("file", file);
+  logger.info("[uploadFileToMinio] Upload file");
   if (!file) {
     logger.error("[UploadFileToMinio] Failed due to empty file");
     throw new BadRequestError("No file provided");

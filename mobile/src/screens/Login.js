@@ -1,17 +1,49 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
-    Image,
-    SafeAreaView,
-    StyleSheet,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import AppText from "../components/AppText";
 import AppTextInput from "../components/AppTextInput";
 import { theme } from "../constants/theme";
+import { AuthContext } from "../context/AuthContext";
+import authService from "../services/auth.service";
 
 export default function LoginScreen({ navigation }) {
   const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const { login } = useContext(AuthContext);
+
+  const handleLogin = async () => {
+    if (!username || !password) {
+      setError("Please fill in all fields");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const { accessToken } = await authService.login(username, password);
+      if (accessToken) {
+        await login(accessToken);
+      } else {
+        setError("Login failed");
+      }
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -26,20 +58,35 @@ export default function LoginScreen({ navigation }) {
           Welcome to MySkill
         </AppText>
 
-        <AppTextInput label="Username" placeholder="johndoeusr" />
+        {error ? <AppText style={styles.errorText}>{error}</AppText> : null}
+
+        <AppTextInput
+          label="Username"
+          placeholder="johndoeusr"
+          value={username}
+          onChangeText={setUsername}
+          autoCapitalize="none"
+        />
         <AppTextInput
           label="Password"
           placeholder="*************"
           secureTextEntry={true}
+          value={password}
+          onChangeText={setPassword}
         />
 
         <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("Home")}
+          style={[styles.button, loading && styles.buttonDisabled]}
+          onPress={handleLogin}
+          disabled={loading}
         >
-          <AppText style={styles.buttonText} weight="bold">
-            Login
-          </AppText>
+          {loading ? (
+            <ActivityIndicator color={theme.colors.surface} />
+          ) : (
+            <AppText style={styles.buttonText} weight="bold">
+              Login
+            </AppText>
+          )}
         </TouchableOpacity>
 
         <View style={styles.footer}>
@@ -74,11 +121,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: theme.spacing.xl,
   },
-  label: {
-    fontSize: 14,
-    color: theme.colors.text,
-    marginBottom: theme.spacing.s,
-  },
   button: {
     backgroundColor: theme.colors.primary,
     padding: 16,
@@ -87,6 +129,14 @@ const styles = StyleSheet.create({
     marginTop: theme.spacing.m,
   },
   buttonText: { color: theme.colors.surface, fontSize: 16 },
+  buttonDisabled: {
+    opacity: 0.7,
+  },
+  errorText: {
+    color: "#ff3333",
+    textAlign: "center",
+    marginBottom: theme.spacing.m,
+  },
   footer: {
     flexDirection: "row",
     justifyContent: "center",

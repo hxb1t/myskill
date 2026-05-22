@@ -5,13 +5,13 @@ const User = require("../models/User");
 const getUserProfile = async (userId) => {
   if (!userId) {
     logger.error("Invalid request, userId cannot be empty");
-    return new BadRequestError("Invalid Request. User ID Cannot be Empty");
+    throw new BadRequestError("Invalid Request. User ID Cannot be Empty");
   }
 
   const existingUser = await User.findOne({ _id: userId });
   if (!existingUser) {
     logger.error("User not found with userId:", userId);
-    return new BadRequestError("User not found");
+    throw new BadRequestError("User not found");
   }
 
   return {

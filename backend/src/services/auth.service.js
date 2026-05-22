@@ -4,6 +4,13 @@ const User = require("../models/User");
 const { BadRequestError, UnauthorizedError } = require("../utils/errors");
 
 const USER_VALIDATION_REGEX = /^[a-zA-Z][a-zA-Z0-9_-]{2,15}$/;
+const DEFAULT_AVATARS = [
+  "https://images.unsplash.com/photo-1740252117044-2af197eea287?q=80&w=200&h=200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1772371272206-0525c3183ca9?q=80&w=200&h=200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1740252117013-4fb21771e7ca?q=80&w=200&h=200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1740252117012-bb53ad05e370?q=80&w=200&h=200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1740252117070-7aa2955b25f8?q=80&w=200&h=200&auto=format&fit=crop",
+];
 
 const register = async ({ fullName, username, password, school }) => {
   if (!username || !USER_VALIDATION_REGEX.test(username)) {
@@ -18,13 +25,15 @@ const register = async ({ fullName, username, password, school }) => {
     Number(process.env.PASSWORD_HASH_SALT) || 12,
   );
 
+  const randomAvatarUrl =
+    DEFAULT_AVATARS[Math.floor(Math.random() * DEFAULT_AVATARS.length)];
+
   const createdUser = await User.create({
     fullName,
     username,
     school,
     passwordHash,
-    avatarUrl:
-      "https://images.unsplash.com/photo-1772371272152-d1806d4351e0?q=80&w=880&auto=format&fit=crop",
+    avatarUrl: randomAvatarUrl,
   });
 
   return {

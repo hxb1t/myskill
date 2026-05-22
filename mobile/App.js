@@ -1,11 +1,15 @@
 import {
-    Poppins_400Regular,
-    Poppins_500Medium,
-    Poppins_700Bold,
-    useFonts,
+  Poppins_400Regular,
+  Poppins_500Medium,
+  Poppins_700Bold,
+  useFonts,
 } from "@expo-google-fonts/poppins";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useContext } from "react";
+import { ActivityIndicator, View } from "react-native";
+import { theme } from "./src/constants/theme";
+import { AuthContext, AuthProvider } from "./src/context/AuthContext";
 import ArticleDetailScreen from "./src/screens/ArticleDetail";
 import CreateArticleScreen from "./src/screens/CreateArticle";
 import HomeScreen from "./src/screens/Home";
@@ -16,6 +20,58 @@ import UploadVideoScreen from "./src/screens/UploadVideo";
 import VideoDetailScreen from "./src/screens/VideoDetail";
 
 const Stack = createNativeStackNavigator();
+
+const AppNavigator = () => {
+  const { accessToken, loading } = useContext(AuthContext);
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: theme.colors.background,
+        }}
+      >
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+      </View>
+    );
+  }
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: "#F8F8FC" },
+        }}
+      >
+        {!accessToken ? (
+          <>
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen
+              name="ArticleDetail"
+              component={ArticleDetailScreen}
+            />
+            <Stack.Screen name="VideoDetail" component={VideoDetailScreen} />
+            <Stack.Screen
+              name="CreateArticle"
+              component={CreateArticleScreen}
+            />
+            <Stack.Screen name="UploadVideo" component={UploadVideoScreen} />
+            <Stack.Screen name="Profile" component={ProfileScreen} />
+          </>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
 
 export default function App() {
   let [fontsLoaded] = useFonts({
@@ -29,23 +85,8 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Login"
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: "#F8F8FC" },
-        }}
-      >
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen} />
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="ArticleDetail" component={ArticleDetailScreen} />
-        <Stack.Screen name="VideoDetail" component={VideoDetailScreen} />
-        <Stack.Screen name="CreateArticle" component={CreateArticleScreen} />
-        <Stack.Screen name="UploadVideo" component={UploadVideoScreen} />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AuthProvider>
+      <AppNavigator />
+    </AuthProvider>
   );
 }

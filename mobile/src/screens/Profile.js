@@ -1,27 +1,39 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
-    Alert,
-    Image,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    TouchableOpacity,
-    View,
+  Alert,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import AppText from "../components/AppText";
 import { theme } from "../constants/theme";
+import { AuthContext } from "../context/AuthContext";
+import profileService from "../services/profile.service";
 
 export default function ProfileScreen({ navigation }) {
-  const [userData] = useState({
-    avatarUri:
-      "https://images.unsplash.com/photo-1772371272152-d1806d4351e0?q=80&w=880&auto=format&fit=crop",
-    fullName: "John Doe",
-    username: "johndoe123",
-    school: "Binus University",
-  });
+  const [userData, setUserData] = useState({});
+  const { logout } = useContext(AuthContext);
 
-  const handleLogout = () => {
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const data = await profileService.getUserProfile();
+        setUserData(data);
+      } catch (error) {
+        console.error("Failed to fetch profile:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  const showLogoutPopup = () => {
     Alert.alert(
       "Log Out",
       "Are you sure you want to log out of your account?",
@@ -31,14 +43,15 @@ export default function ProfileScreen({ navigation }) {
           text: "Log Out",
           style: "destructive",
           onPress: () => {
-            navigation.reset({
-              index: 0,
-              routes: [{ name: "Login" }],
-            });
+            handleLogout();
           },
         },
       ],
     );
+  };
+
+  const handleLogout = async () => {
+    await logout();
   };
 
   return (
@@ -78,7 +91,10 @@ export default function ProfileScreen({ navigation }) {
         </View>
 
         <View style={styles.footer}>
-          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <TouchableOpacity
+            style={styles.logoutButton}
+            onPress={showLogoutPopup}
+          >
             <Ionicons name="log-out-outline" size={20} color="#EF4444" />
             <AppText style={styles.logoutText} weight="bold">
               Log Out
