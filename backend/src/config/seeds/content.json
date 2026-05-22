@@ -1,0 +1,54 @@
+[
+  {
+    "_id": {
+      "$oid": "64f1a2b3c4d5e00000000002"
+    },
+    "authorId": {
+      "$oid": "64f1a2b3c4d5e00000000001"
+    },
+    "type": "article",
+    "title": "Membuat Website menggunakan React.JS",
+    "thumbnailUrl": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=1469&auto=format&fit=crop",
+    "contentHtml": "<h1>Membuat Website dengan React</h1><p>React adalah library JavaScript yang sangat populer untuk membangun antarmuka pengguna berbasis komponen.</p>",
+    "createdAt": {
+      "$date": "2026-05-21T14:30:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "64f1a2b3c4d5e00000000003"
+    },
+    "authorId": {
+      "$oid": "64f1a2b3c4d5e00000000001"
+    },
+    "type": "video",
+    "title": "Application Deployments",
+    "thumbnailUrl": "https://images.unsplash.com/photo-1667372335962-5fd503a8ae5b?q=80&w=1632&auto=format&fit=crop",
+    "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+    "descriptionHtml": "<p>Dalam tutorial ini, kita akan membahas praktik terbaik untuk melakukan deployment aplikasi ke production.</p>",
+    "createdAt": {
+      "$date": "2026-05-21T16:15:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-05-21T16:15:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "64f1a2b3c4d5e00000000004"
+    },
+    "authorId": {
+      "$oid": "64f1a2b3c4d5e00000000001"
+    },
+    "type": "article",
+    "title": "Building RESTful APIs with Go",
+    "thumbnailUrl": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1470&auto=format&fit=crop",
+    "contentHtml": "<h1>Struktur RESTful API di Golang</h1><p>Membangun backend yang terstruktur dengan clean architecture, routing, dan implementasi CRUD dasar.</p>",
+    "createdAt": {
+      "$date": "2026-05-22T09:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-05-22T09:00:00Z"
+    }
+  }
+]

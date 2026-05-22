@@ -9,18 +9,12 @@
     "**/ios",
     "**/dist",
     "**/build",
-    "**/.DS_Store",
+    "**/.DS_Store"
   ],
-
-  "inlay_hints": {
-    "enabled": true,
-    "show_type_hints": true,
-    "show_parameter_hints": true,
-  },
 
   "code_actions_on_format": {
     "source.fixAll.eslint": true,
-    "source.organizeImports": true,
+    "source.organizeImports": true
   },
 
   "languages": {
@@ -29,45 +23,45 @@
       "formatter": {
         "external": {
           "command": "prettier",
-          "arguments": ["--stdin-filepath", "{filepath}"],
-        },
-      },
+          "arguments": ["--stdin-filepath", "{filepath}"]
+        }
+      }
     },
     "TypeScript": {
       "language_servers": ["typescript-language-server", "eslint"],
       "formatter": {
         "external": {
           "command": "prettier",
-          "arguments": ["--stdin-filepath", "{filepath}"],
-        },
-      },
+          "arguments": ["--stdin-filepath", "{filepath}"]
+        }
+      }
     },
     "TSX": {
       "language_servers": ["typescript-language-server", "eslint"],
       "formatter": {
         "external": {
           "command": "prettier",
-          "arguments": ["--stdin-filepath", "{filepath}"],
-        },
-      },
+          "arguments": ["--stdin-filepath", "{filepath}"]
+        }
+      }
     },
     "JSON": {
       "formatter": {
         "external": {
           "command": "prettier",
-          "arguments": ["--stdin-filepath", "{filepath}"],
-        },
-      },
-    },
+          "arguments": ["--stdin-filepath", "{filepath}"]
+        }
+      }
+    }
   },
 
   "lsp": {
     "eslint": {
       "settings": {
         "workingDirectory": {
-          "mode": "auto",
-        },
-      },
+          "mode": "auto"
+        }
+      }
     },
     "typescript-language-server": {
       "initialization_options": {
@@ -79,9 +73,9 @@
           "includeInlayPropertyDeclarationTypeHints": true,
           "includeInlayFunctionLikeReturnTypeHints": true,
           "includeInlayEnumMemberValueHints": true,
-          "importModuleSpecifierPreference": "non-relative",
-        },
-      },
-    },
-  },
+          "importModuleSpecifierPreference": "non-relative"
+        }
+      }
+    }
+  }
 }
