@@ -307,12 +307,11 @@ export default function UploadVideoScreen({ navigation }) {
   );
 }
 
-// Ensure your uploadedImage style exists from the previous screen!
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
-    marginTop: 30, // Or handle safely with SafeAreaView
+    marginTop: 30,
   },
   header: {
     flexDirection: "row",

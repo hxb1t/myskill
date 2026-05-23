@@ -1,0 +1,153 @@
+.layout-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+.layout-content {
+  flex-grow: 1;
+  width: 100%;
+}
+
+.main-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.header-container {
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-logo-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+
+.header-logo {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  object-fit: contain;
+}
+
+.header-brand {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #242c51;
+}
+
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.nav-link {
+  color: #4b5563;
+  font-weight: 500;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.nav-link:hover {
+  color: #7241f5;
+}
+
+.nav-btn-outline {
+  padding: 0.5rem 1rem;
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-btn-outline:hover {
+  background-color: #f3f4f6;
+}
+
+.main-footer {
+  background-color: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  padding: 2rem 1.5rem;
+  margin-top: auto;
+}
+
+.footer-container {
+  background-color: #ffffff;
+  max-width: 64rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footer-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.footer-link {
+  color: #6b7280;
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: color 0.2s;
+}
+
+.footer-link:hover {
+  color: #111827;
+}
+
+.footer-copyright {
+  background-color: #ffffff;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.nav-link {
+  color: #4b5563;
+  font-weight: 500;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.nav-link:hover {
+  color: #7241f5;
+}
+
+.nav-link.active {
+  color: #7241f5;
+  font-weight: bold;
+}
+
+.nav-btn-logout {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ef4444;
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  color: #ef4444;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-btn-logout:hover {
+  background-color: #fef2f2;
+}

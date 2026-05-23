@@ -1,0 +1,150 @@
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f8f6ff;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 28rem;
+  padding: 2rem;
+  border-radius: 1rem;
+}
+
+.login-logo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.login-logo {
+  width: 4rem;
+  height: 4rem;
+  background-color: #7241f5;
+  border-radius: 1rem;
+  padding: 10px;
+}
+
+.login-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  color: #111827;
+  margin-bottom: 2rem;
+}
+
+.login-error {
+  color: #ef4444;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.input-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.25rem;
+}
+
+.input-field {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.input-field:focus {
+  box-shadow: 0 0 0 2px #7241f5;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 1rem;
+  color: #ffffff;
+  font-weight: bold;
+  background-color: #7241f5;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #663ed3;
+}
+
+.btn-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.login-footer {
+  margin-top: 2rem;
+  text-align: center;
+  color: #6b7280;
+}
+
+.login-link {
+  font-weight: bold;
+  color: #7241f5;
+  text-decoration: none;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}
+
+.avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.hidden-input {
+  display: none;
+}
+
+.avatar-placeholder {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 50%;
+  background-color: #f3f4f6;
+  border: 2px dashed #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  padding: 0;
+  transition: background-color 0.2s;
+  margin-bottom: 0.5rem;
+}
+
+.avatar-placeholder:hover {
+  background-color: #e2e8f0;
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #7241f5;
+}

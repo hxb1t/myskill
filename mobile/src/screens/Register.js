@@ -30,7 +30,6 @@ export default function RegisterScreen({ navigation }) {
   const [passwordError, setPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // 2. Image Picker Logic
   const handlePickAvatar = async () => {
     try {
       const permissionResult =
@@ -47,7 +46,7 @@ export default function RegisterScreen({ navigation }) {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [1, 1], // Force a square crop for the avatar
+        aspect: [1, 1],
         quality: 0.8,
       });
 
