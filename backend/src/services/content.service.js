@@ -16,6 +16,19 @@ const getContents = async (userId) => {
   return contents;
 };
 
+const getUserContents = async (userId) => {
+  if (!userId) {
+    logger.error("[getContents] User id is empty");
+    throw new BadRequestError("Invalid request");
+  }
+
+  const contents = await Content.find({ authorId: { $eq: userId } })
+    .sort({ createdAt: -1 })
+    .populate("authorId", "fullName username school avatarUrl");
+
+  return contents;
+};
+
 const getContentDetail = async (contentId) => {
   if (!contentId) {
     logger.error("[getContentDetail] Content id is empty");
@@ -84,4 +97,9 @@ const createContent = async (data, userId) => {
   );
 };
 
-module.exports = { createContent, getContents, getContentDetail };
+module.exports = {
+  createContent,
+  getContents,
+  getContentDetail,
+  getUserContents,
+};

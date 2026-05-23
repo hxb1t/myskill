@@ -9,7 +9,7 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import RenderHTML from "react-native-render-html";
+import AppRenderHtml from "../components/AppRenderHtml";
 import AppText from "../components/AppText";
 import Loading from "../components/Loading";
 import { theme } from "../constants/theme";
@@ -21,21 +21,6 @@ export default function ArticleDetailScreen({ navigation, route }) {
   const [loading, setLoading] = useState(true);
 
   const { width } = useWindowDimensions();
-
-  const customTagsStyles = {
-    b: { fontWeight: "bold" },
-    strong: { fontWeight: "bold" },
-    i: { fontStyle: "italic" },
-    em: { fontStyle: "italic" },
-    u: { textDecorationLine: "underline" },
-    ul: {
-      marginLeft: 10,
-      marginBottom: 10,
-    },
-    li: {
-      marginTop: 4,
-    },
-  };
 
   useEffect(() => {
     const fetchContentDetail = async () => {
@@ -104,18 +89,7 @@ export default function ArticleDetailScreen({ navigation, route }) {
           </View>
         </View>
 
-        <RenderHTML
-          contentWidth={width}
-          source={{ html: data.contentHtml }}
-          tagsStyles={customTagsStyles}
-          baseStyle={{
-            fontSize: 14,
-            textAlign: "left",
-            color: theme.colors.text,
-            lineHeight: 21,
-            marginTop: 5,
-          }}
-        />
+        <AppRenderHtml width={width} data={data.contentHtml} />
       </ScrollView>
     </SafeAreaView>
   );

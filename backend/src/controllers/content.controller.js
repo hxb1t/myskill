@@ -12,6 +12,16 @@ const getContents = async (req, res, next) => {
   }
 };
 
+const getUserContents = async (req, res, next) => {
+  try {
+    const contents = await contentService.getUserContents(req.claims.userId);
+    sendSuccess(res, contents);
+  } catch (error) {
+    logger.error("[getContents] Unexpected error happened", error.message);
+    next(error);
+  }
+};
+
 const getContentById = async (req, res, next) => {
   try {
     const content = await contentService.getContentDetail(req.params.contentId);
@@ -35,4 +45,9 @@ const createContent = async (req, res, next) => {
   }
 };
 
-module.exports = { getContents, createContent, getContentById };
+module.exports = {
+  getContents,
+  createContent,
+  getContentById,
+  getUserContents,
+};

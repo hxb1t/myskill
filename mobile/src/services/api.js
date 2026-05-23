@@ -10,7 +10,11 @@ const apiClient = axios.create({
   },
 });
 
-const publicRoutes = ["/auth/login", "/auth/register"];
+const publicRoutes = [
+  "/auth/login",
+  "/auth/register",
+  "/file/upload/profile-picture",
+];
 apiClient.interceptors.request.use(
   async (config) => {
     const isPublicRoute = publicRoutes.some((route) =>
@@ -28,17 +32,6 @@ apiClient.interceptors.request.use(
       }
     }
 
-    const method = config.method.toUpperCase();
-    console.log(`🚀 [OUTGOING] ${method} ${config.baseURL}${config.url}`);
-
-    console.log(`📦 [HEADERS]`, JSON.stringify(config.headers, null, 2));
-
-    if (config.data && !(config.data instanceof FormData)) {
-      console.log(`📝 [PAYLOAD]`, JSON.stringify(config.data, null, 2));
-    } else if (config.data instanceof FormData) {
-      console.log(`📝 [PAYLOAD] FormData (File Upload)`);
-    }
-
     return config;
   },
   (error) => {
@@ -48,10 +41,6 @@ apiClient.interceptors.request.use(
 
 apiClient.interceptors.response.use(
   (response) => {
-    console.log(
-      `✅ [RESPONSE] from ${response.config.url}\nPAYLOAD:`,
-      JSON.stringify(response.data, null, 2),
-    );
     return response;
   },
   (error) => {

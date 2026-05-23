@@ -1,8 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { useVideoPlayer, VideoView } from "expo-video"; // Added for video preview
+import { useVideoPlayer, VideoView } from "expo-video";
 import { useRef, useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -20,10 +23,15 @@ import AppText from "../components/AppText";
 import AppTextInput from "../components/AppTextInput";
 import { theme } from "../constants/theme";
 
+import contentService from "../services/content.service";
+import fileService from "../services/file.service";
+
 export default function UploadVideoScreen({ navigation }) {
   const [videoUri, setVideoUri] = useState(null);
   const [imageUri, setImageUri] = useState(null);
-  const [contentHtml, setContentHtml] = useState("");
+  const [title, setTitle] = useState("");
+  const [descriptionHtml, setDescriptionHtml] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const richText = useRef();
 
@@ -33,48 +41,104 @@ export default function UploadVideoScreen({ navigation }) {
   });
 
   const pickVideo = async () => {
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    try {
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (permissionResult.granted === false) {
+        Alert.alert(
+          "Permission Required",
+          "Permission to access camera roll is required!",
+        );
+        return;
+      }
 
-    if (permissionResult.granted === false) {
-      alert("Permission to access camera roll is required!");
-      return;
-    }
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+        allowsEditing: true,
+        quality: 0.8,
+      });
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
-      allowsEditing: true,
-      quality: 0.8,
-    });
-
-    if (!result.canceled) {
-      setVideoUri(result.assets[0].uri);
+      if (!result.canceled) {
+        setVideoUri(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error("Video picker error:", error);
     }
   };
 
   const pickImage = async () => {
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    try {
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (permissionResult.granted === false) {
+        Alert.alert(
+          "Permission Required",
+          "Permission to access camera roll is required!",
+        );
+        return;
+      }
 
-    if (permissionResult.granted === false) {
-      alert("Permission to access camera roll is required!");
-      return;
-    }
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [16, 9],
+        quality: 0.8,
+      });
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [16, 9],
-      quality: 0.8,
-    });
-
-    if (!result.canceled) {
-      setImageUri(result.assets[0].uri);
+      if (!result.canceled) {
+        setImageUri(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error("Image picker error:", error);
     }
   };
 
-  const handlePostArticle = () => {
-    navigation.goBack();
+  const handlePostVideo = async () => {
+    if (!videoUri)
+      return Alert.alert("Missing Video", "Please select a video to upload.");
+
+    if (!imageUri)
+      return Alert.alert(
+        "Missing Thumbnail",
+        "Please upload a thumbnail image.",
+      );
+
+    if (!title.trim())
+      return Alert.alert(
+        "Missing Title",
+        "Please enter a title for your video.",
+      );
+
+    if (!descriptionHtml.trim())
+      return Alert.alert("Missing Description", "Please enter a description.");
+
+    setIsSubmitting(true);
+
+    try {
+      const [videoUploadRes, imageUploadRes] = await Promise.all([
+        fileService.uploadFile(videoUri),
+        fileService.uploadFile(imageUri),
+      ]);
+
+      await contentService.createContent({
+        title,
+        descriptionHtml,
+        videoUrl: videoUploadRes.url,
+        thumbnailUrl: imageUploadRes.url,
+        type: "video",
+      });
+
+      Alert.alert("Success", "Your video has been published!", [
+        { text: "OK", onPress: () => navigation.goBack() },
+      ]);
+    } catch (error) {
+      Alert.alert(
+        "Upload Failed",
+        error.message || "Something went wrong while publishing.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -91,6 +155,7 @@ export default function UploadVideoScreen({ navigation }) {
             <TouchableOpacity
               style={styles.backBtn}
               onPress={() => navigation.goBack()}
+              disabled={isSubmitting}
             >
               <Ionicons
                 name="chevron-back"
@@ -114,14 +179,27 @@ export default function UploadVideoScreen({ navigation }) {
                   nativeControls={true}
                   allowsFullscreen={true}
                 />
-
-                <TouchableOpacity onPress={pickVideo} style={styles.changeBtn}>
+                <TouchableOpacity
+                  onPress={pickVideo}
+                  style={styles.changeBtn}
+                  disabled={isSubmitting}
+                >
                   <Ionicons
                     name="refresh"
                     size={16}
-                    color={theme.colors.primary}
+                    color={
+                      isSubmitting
+                        ? theme.colors.textMuted
+                        : theme.colors.primary
+                    }
                   />
-                  <AppText style={styles.changeBtnText} weight="bold">
+                  <AppText
+                    style={[
+                      styles.changeBtnText,
+                      isSubmitting && { color: theme.colors.textMuted },
+                    ]}
+                    weight="bold"
+                  >
                     Change Video
                   </AppText>
                 </TouchableOpacity>
@@ -130,6 +208,7 @@ export default function UploadVideoScreen({ navigation }) {
               <TouchableOpacity
                 style={styles.uploadPlaceholder}
                 onPress={pickVideo}
+                disabled={isSubmitting}
               >
                 <View style={styles.placeholderContent}>
                   <Ionicons
@@ -150,6 +229,7 @@ export default function UploadVideoScreen({ navigation }) {
             <TouchableOpacity
               style={styles.uploadPlaceholder}
               onPress={pickImage}
+              disabled={isSubmitting}
             >
               {imageUri ? (
                 <Image
@@ -168,7 +248,13 @@ export default function UploadVideoScreen({ navigation }) {
           </View>
 
           <View style={styles.inputGroup}>
-            <AppTextInput label="Title" />
+            <AppTextInput
+              label="Title"
+              placeholder="Enter video title..."
+              value={title}
+              onChangeText={setTitle}
+              editable={!isSubmitting}
+            />
           </View>
 
           <View style={[styles.inputGroup, { flex: 1 }]}>
@@ -190,19 +276,29 @@ export default function UploadVideoScreen({ navigation }) {
               />
               <RichEditor
                 ref={richText}
-                onChange={(descriptionText) => setContentHtml(descriptionText)}
+                onChange={(text) => setDescriptionHtml(text)}
                 placeholder="Write your video description here..."
                 style={styles.richTextEditorStyle}
                 initialHeight={250}
+                useContainer={true}
               />
             </View>
           </View>
 
           <View style={styles.footer}>
-            <TouchableOpacity style={styles.button} onPress={handlePostArticle}>
-              <AppText style={styles.buttonText} weight="bold">
-                Publish Video
-              </AppText>
+            {/* 4. Added Loading Spinner State */}
+            <TouchableOpacity
+              style={[styles.button, isSubmitting && styles.buttonDisabled]}
+              onPress={handlePostVideo}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <ActivityIndicator color={theme.colors.surface} />
+              ) : (
+                <AppText style={styles.buttonText} weight="bold">
+                  Publish Video
+                </AppText>
+              )}
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -211,11 +307,12 @@ export default function UploadVideoScreen({ navigation }) {
   );
 }
 
+// Ensure your uploadedImage style exists from the previous screen!
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
-    marginTop: 30,
+    marginTop: 30, // Or handle safely with SafeAreaView
   },
   header: {
     flexDirection: "row",
@@ -238,8 +335,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: theme.colors.text,
     marginBottom: theme.spacing.s,
+    fontWeight: "600",
   },
-
   uploadPlaceholder: {
     height: 200,
     backgroundColor: "#e8ebef",
@@ -256,16 +353,17 @@ const styles = StyleSheet.create({
     color: "#718096",
     fontSize: 14,
   },
-  uploadedVideo: {
+  uploadedImage: {
     width: "100%",
     height: "100%",
+    resizeMode: "cover",
   },
-
   richTextContainer: {
     borderRadius: theme.borderRadius.m,
     overflow: "hidden",
     borderWidth: 1,
     borderColor: "#E2E8F0",
+    flex: 1,
   },
   richTextToolbar: {
     backgroundColor: "#F7FAFC",
@@ -274,14 +372,17 @@ const styles = StyleSheet.create({
   },
   richTextEditorStyle: {
     backgroundColor: theme.colors.surface,
+    flex: 1,
   },
-
-  footer: { padding: theme.spacing.l, paddingBottom: theme.spacing.xl },
+  footer: { paddingBottom: theme.spacing.xl, paddingTop: theme.spacing.m },
   button: {
     backgroundColor: theme.colors.primary,
     padding: 16,
     borderRadius: theme.borderRadius.m,
     alignItems: "center",
+  },
+  buttonDisabled: {
+    opacity: 0.7,
   },
   buttonText: { color: theme.colors.surface, fontSize: 16 },
   videoPreview: {
@@ -289,7 +390,7 @@ const styles = StyleSheet.create({
     height: 220,
     borderRadius: theme.borderRadius.m,
     overflow: "hidden",
-    backgroundColor: "#000", // Keeps the box black while loading
+    backgroundColor: "#000",
   },
   changeBtn: {
     flexDirection: "row",

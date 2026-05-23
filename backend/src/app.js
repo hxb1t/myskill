@@ -15,6 +15,7 @@ const authRoute = require("./routers/auth.route");
 const userRoute = require("./routers/user.route");
 const fileRoute = require("./routers/file.route");
 const contentRoute = require("./routers/content.route");
+const logger = require("./utils/logger");
 
 const app = express();
 
@@ -61,7 +62,7 @@ app.use("/auth", authRoute);
 
 // Protected Auth Route
 app.use("/user", authMiddleware, userRoute);
-app.use("/file", authMiddleware, fileRoute);
+app.use("/file", fileRoute);
 app.use("/content", authMiddleware, contentRoute);
 
 // Global Error handler
@@ -75,8 +76,8 @@ const start = async () => {
 
     const PORT = process.env.PORT || 8081;
     app.listen(PORT, "0.0.0.0", () => {
-      console.log(`Server running on port ${PORT}`);
-      console.log(`Allowed CORS origins: ${allowedOrigins.join(", ")}`);
+      logger.info(`Server running on port ${PORT}`);
+      logger.info(`Allowed CORS origins: ${allowedOrigins.join(", ")}`);
     });
   } catch (error) {
     console.error("Failed to start server:", error);

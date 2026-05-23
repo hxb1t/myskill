@@ -14,4 +14,17 @@ const uploadFile = async (req, res, next) => {
   }
 };
 
-module.exports = { uploadFile };
+const uploadProfilePicture = async (req, res, next) => {
+  try {
+    logger.info(
+      `[UploadPublicFile] File upload initatied by user registration`,
+    );
+    const data = await fileService.uploadProfilePicture(req.file);
+    sendSuccess(res, data);
+  } catch (error) {
+    logger.error("Error uploading file: ", error.message);
+    next(error);
+  }
+};
+
+module.exports = { uploadFile, uploadProfilePicture };

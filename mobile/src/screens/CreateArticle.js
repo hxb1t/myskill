@@ -6,7 +6,6 @@ import {
   Alert,
   Image,
   KeyboardAvoidingView,
-  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -81,7 +80,7 @@ export default function CreateArticleScreen({ navigation }) {
       const uploadResponse = await fileService.uploadFile(imageUri);
 
       const thumbnailUrl = uploadResponse.url;
-      console.log("thumbnailUrl", thumbnailUrl);
+
       await contentService.createContent({
         title,
         contentHtml,
@@ -104,10 +103,7 @@ export default function CreateArticleScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-      >
+      <KeyboardAvoidingView behavior="height" style={{ flex: 1 }}>
         <ScrollView
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"

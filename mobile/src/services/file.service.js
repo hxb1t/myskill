@@ -42,6 +42,39 @@ const uploadFile = async (fileUri) => {
   }
 };
 
+const uploadProfilePicture = async (fileUri) => {
+  try {
+    const formData = new FormData();
+    const filename = fileUri.split("/").pop();
+
+    const type = getMimeType(filename);
+
+    formData.append("file", {
+      uri: fileUri,
+      name: filename,
+      type,
+    });
+
+    const response = await apiClient.post(
+      "/file/upload/profile-picture",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+
+    return response.data.data;
+  } catch (error) {
+    if (error.response && error.response.data) {
+      throw new Error(error.response.data.message || "File upload failed.");
+    }
+    throw new Error("Unable to connect to the server for upload.");
+  }
+};
+
 export default {
   uploadFile,
+  uploadProfilePicture,
 };

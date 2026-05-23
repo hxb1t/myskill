@@ -9,7 +9,6 @@ const login = async (username, password) => {
 
     return response.data.data;
   } catch (error) {
-    console.log("error", error.message);
     if (error.response && error.response.data) {
       throw new Error(error.response.data.message || "Login failed");
     }
@@ -18,13 +17,14 @@ const login = async (username, password) => {
   }
 };
 
-const register = async (fullName, school, username, password) => {
+const register = async (fullName, school, username, password, avatarUrl) => {
   try {
     const response = await apiClient.post("/auth/register", {
       fullName,
       school,
       username,
       password,
+      avatarUrl,
     });
 
     return response.data.success;

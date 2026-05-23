@@ -7,9 +7,10 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  useWindowDimensions,
   View,
 } from "react-native";
-import RenderHTML from "react-native-render-html";
+import AppRenderHtml from "../components/AppRenderHtml";
 import AppText from "../components/AppText";
 import Loading from "../components/Loading";
 import { theme } from "../constants/theme";
@@ -19,6 +20,8 @@ export default function VideoDetailScreen({ navigation, route }) {
   const [data, setData] = useState({});
   const { contentId = 0 } = route.params || {};
   const [loading, setLoading] = useState(true);
+
+  const { width } = useWindowDimensions();
 
   useEffect(() => {
     const fetchContentDetail = async () => {
@@ -90,16 +93,7 @@ export default function VideoDetailScreen({ navigation, route }) {
           </View>
         </View>
 
-        <RenderHTML
-          baseStyle={{
-            fontSize: 14,
-            textAlign: "left",
-            color: theme.colors.text,
-            lineHeight: 21,
-            marginTop: 5,
-          }}
-          source={{ html: data.descriptionHtml }}
-        />
+        <AppRenderHtml width={width} data={data.descriptionHtml} />
       </ScrollView>
     </SafeAreaView>
   );

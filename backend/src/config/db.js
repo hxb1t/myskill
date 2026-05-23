@@ -8,7 +8,7 @@ const logger = require("../utils/logger");
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log("Connected to Mongodb Atlas");
+    logger.info("Connected to Mongodb Atlas");
   } catch (error) {
     console.error(error);
   }

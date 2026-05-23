@@ -39,4 +39,33 @@ const uploadFileToMinio = async (file, userId) => {
   return { fileName, url: fileUrl };
 };
 
-module.exports = { uploadFileToMinio };
+const uploadProfilePicture = async (file) => {
+  logger.info("[uploadFileToMinio] Upload file");
+  if (!file) {
+    logger.error("[UploadFileToMinio] Failed due to empty file");
+    throw new BadRequestError("No file provided");
+  }
+
+  const bucketName = process.env.MINIO_BUCKET_NAME || "myskill-bucket";
+  const timestamp = new Date().toISOString().replace(/:/g, "-");
+  const fileName = `profile-picture-${timestamp}-${file.originalname}`;
+
+  const bucketExists = await minioClient.bucketExists(bucketName);
+  if (!bucketExists) {
+    await minioClient.makeBucket(bucketName);
+  }
+
+  await minioClient.putObject(bucketName, fileName, file.buffer, file.size, {
+    "Content-Type": file.mimetype,
+  });
+
+  const fileUrl = await minioClient.presignedGetObject(
+    bucketName,
+    fileName,
+    7 * 24 * 60 * 60,
+  );
+
+  return { fileName, url: fileUrl };
+};
+
+module.exports = { uploadFileToMinio, uploadProfilePicture };

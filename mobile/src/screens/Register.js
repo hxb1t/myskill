@@ -1,3 +1,5 @@
+import { Ionicons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -14,9 +16,12 @@ import {
 import AppText from "../components/AppText";
 import AppTextInput from "../components/AppTextInput";
 import { theme } from "../constants/theme";
+
 import authService from "../services/auth.service";
+import fileService from "../services/file.service";
 
 export default function RegisterScreen({ navigation }) {
+  const [avatarUri, setAvatarUri] = useState(null);
   const [fullName, setFullName] = useState("");
   const [school, setSchool] = useState("");
   const [username, setUsername] = useState("");
@@ -24,6 +29,35 @@ export default function RegisterScreen({ navigation }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // 2. Image Picker Logic
+  const handlePickAvatar = async () => {
+    try {
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (permissionResult.granted === false) {
+        Alert.alert(
+          "Permission Required",
+          "Permission to access camera roll is required!",
+        );
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1], // Force a square crop for the avatar
+        quality: 0.8,
+      });
+
+      if (!result.canceled) {
+        setAvatarUri(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error("Image picker error:", error);
+    }
+  };
 
   const handlePasswordChange = (text) => {
     setPassword(text);
@@ -43,7 +77,6 @@ export default function RegisterScreen({ navigation }) {
     }
   };
 
-  // 3. API Submission Logic
   const handleRegister = async () => {
     if (!username || !password || !fullName || !school || !confirmPassword) {
       Alert.alert("Error!", "Please fill in all the required fields.");
@@ -58,7 +91,14 @@ export default function RegisterScreen({ navigation }) {
     setLoading(true);
 
     try {
-      await authService.register(fullName, school, username, password);
+      const uploadRes = await fileService.uploadProfilePicture(avatarUri);
+      await authService.register(
+        fullName,
+        school,
+        username,
+        password,
+        uploadRes.url,
+      );
 
       Alert.alert(
         "Registration Successful",
@@ -95,15 +135,31 @@ export default function RegisterScreen({ navigation }) {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.logoContainer}>
-            <Image
-              source={require("../../assets/myskill-icon.png")}
-              style={styles.icon}
-            />
-          </View>
           <AppText style={styles.title} weight="bold">
             Create your Account
           </AppText>
+
+          <View style={styles.avatarSection}>
+            <TouchableOpacity
+              onPress={handlePickAvatar}
+              disabled={loading}
+              style={styles.avatarButton}
+            >
+              <View style={styles.avatarPlaceholder}>
+                {avatarUri ? (
+                  <Image
+                    source={{ uri: avatarUri }}
+                    style={styles.avatarImage}
+                  />
+                ) : (
+                  <Ionicons name="camera-outline" size={32} color="#A0AEC0" />
+                )}
+              </View>
+              <AppText style={styles.avatarText} weight="bold">
+                {avatarUri ? "Change Photo" : "Upload Photo"}
+              </AppText>
+            </TouchableOpacity>
+          </View>
 
           <AppTextInput
             label="Fullname"
@@ -111,6 +167,7 @@ export default function RegisterScreen({ navigation }) {
             placeholder="John Doe"
             value={fullName}
             onChangeText={setFullName}
+            editable={!loading}
           />
           <AppTextInput
             label="School Name"
@@ -118,6 +175,7 @@ export default function RegisterScreen({ navigation }) {
             placeholder="Binus University"
             value={school}
             onChangeText={setSchool}
+            editable={!loading}
           />
           <AppTextInput
             label="Username"
@@ -126,6 +184,7 @@ export default function RegisterScreen({ navigation }) {
             autoCapitalize="none"
             value={username}
             onChangeText={setUsername}
+            editable={!loading}
           />
           <AppTextInput
             label="Password"
@@ -134,6 +193,7 @@ export default function RegisterScreen({ navigation }) {
             secureTextEntry={true}
             value={password}
             onChangeText={handlePasswordChange}
+            editable={!loading}
           />
           <AppTextInput
             label="Confirm Password"
@@ -142,6 +202,7 @@ export default function RegisterScreen({ navigation }) {
             secureTextEntry={true}
             value={confirmPassword}
             onChangeText={handleConfirmPasswordChange}
+            editable={!loading}
           />
 
           {passwordError ? (
@@ -168,7 +229,10 @@ export default function RegisterScreen({ navigation }) {
             <AppText style={styles.footerText}>
               Already have an account?{" "}
             </AppText>
-            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Login")}
+              disabled={loading}
+            >
               <AppText style={styles.footerLink} weight="bold">
                 Login here
               </AppText>
@@ -207,7 +271,39 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     textAlign: "center",
     marginBottom: theme.spacing.m,
+    marginTop: theme.spacing.l,
   },
+
+  avatarSection: {
+    alignItems: "center",
+    marginBottom: theme.spacing.l,
+    marginTop: theme.spacing.m,
+  },
+  avatarButton: {
+    alignItems: "center",
+  },
+  avatarPlaceholder: {
+    width: 90,
+    height: 90,
+    borderRadius: 45,
+    backgroundColor: "#E2E8F0",
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
+    marginBottom: 8,
+    borderWidth: 2,
+    borderColor: "#CBD5E1",
+  },
+  avatarImage: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+  },
+  avatarText: {
+    color: theme.colors.primary,
+    fontSize: 14,
+  },
+
   label: {
     fontSize: 14,
     color: theme.colors.text,
