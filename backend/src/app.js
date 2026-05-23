@@ -71,8 +71,6 @@ app.use(errorHandler);
 const start = async () => {
   try {
     await connectDB();
-    await seedUserData();
-    await seedContentData();
 
     const PORT = process.env.PORT || 8081;
     app.listen(PORT, "0.0.0.0", () => {
