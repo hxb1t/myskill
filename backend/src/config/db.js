@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
 const { Content } = require("../models/Content");
 const User = require("../models/User");
-const contentSeeds = require("../config/seeds/content.json");
-const userSeeds = require("../config/seeds/user.json");
 const logger = require("../utils/logger");
 
 const connectDB = async () => {
