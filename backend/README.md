@@ -1,1 +1,3 @@
-# Lab Assignment 1
+# myskill-backend
+
+Specialized Platform Development Exam - My Skill Backend Application
